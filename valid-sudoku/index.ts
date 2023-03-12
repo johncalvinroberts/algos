@@ -1,27 +1,22 @@
-function validateChunk(chunk: string[]): boolean {
-  const items = new Map<number, number>();
-  for (const item of chunk) {
-    if (/[0-9]/.test(item)) {
-      const count = items.get(parseInt(item)) || 0;
-      items.set(parseInt(item), count + 1)
-    }
-  }
-  if (Array.from(items.values()).some(item => item > 1)) {
-    return false
-  }
-  return true
-}
-
 function isValidSudoku(board: string[][]): boolean {
-  for (const row of board) {
-    if (!validateChunk(row)) return false;
-  }
-  for (let i = 0; i < board.length; i += 3) {
-    const chunk: string[] = []
-    for (let j = i; j < 3; j++) {
-      chunk.push(board[i][j]);
+  const rows = new Map<string, string>();
+  const cols = new Map<string, string>();
+  const squares = new Map<string, string>();
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = board[r][c];
+      if (cell === ".") continue;
+      const grid = `${Math.floor(r / 3)} ${Math.floor(c / 3)}`;
+      if (!rows[r]) rows[r] = new Set();
+      if (!cols[c]) cols[c] = new Set();
+      if (!squares[grid]) squares[grid] = new Set();
+      if (rows[r].has(cell)) return false;
+      if (cols[c].has(cell)) return false;
+      if (squares[grid].has(cell)) return false;
+      rows[r].add(cell);
+      cols[c].add(cell);
+      squares[grid].add(cell);
     }
-    validateChunk(chunk)
   }
   return true
 };
